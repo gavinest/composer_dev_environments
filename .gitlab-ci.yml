@@ -4,6 +4,6 @@ stages:
     - test
 
 test:
-    stage: build
+    stage: test
     scripts:
         - echo "hello world"
