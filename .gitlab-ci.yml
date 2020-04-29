@@ -1,36 +1,58 @@
-# This file is a template, and might need editing before it works on your project.
-# see https://docs.gitlab.com/ce/ci/yaml/README.html for all available options
+# # This file is a template, and might need editing before it works on your project.
+# # see https://docs.gitlab.com/ce/ci/yaml/README.html for all available options
 
-# you can delete this line if you're not using Docker
-image: busybox:latest
+# # you can delete this line if you're not using Docker
+# image: busybox:latest
 
-before_script:
-  - echo "Before script section"
-  - echo "For example you might run an update here or install a build dependency"
-  - echo "Or perhaps you might print out some debugging details"
+# before_script:
+#   - echo "Before script section"
+#   - echo "For example you might run an update here or install a build dependency"
+#   - echo "Or perhaps you might print out some debugging details"
 
-after_script:
-  - echo "After script section"
-  - echo "For example you might do some cleanup here"
+# after_script:
+#   - echo "After script section"
+#   - echo "For example you might do some cleanup here"
 
-build1:
-  stage: build
-  script:
-    - echo "Do your build here"
+# build1:
+#   stage: build
+#   script:
+#     - echo "Do your build here"
 
-test1:
+# test1:
+#   stage: test
+#   script:
+#     - echo "Do a test here"
+#     - echo "For example run a test suite"
+
+# test2:
+#   stage: test
+#   script:
+#     - echo "Do another parallel test here"
+#     - echo "For example run a lint test"
+
+# deploy1:
+#   stage: deploy
+#   script:
+#     - echo "Do your deploy here"
+
+stages:
+  - test
+  - dev-env
+  
+variables:
+  IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}
+
+job1:
   stage: test
+  before_script:
+    - 'echo "THIS IS THE BRANCH NAME: ${CI_COMMIT}"'
   script:
-    - echo "Do a test here"
-    - echo "For example run a test suite"
+    - echo ${CI_COMMIT}
+    - echo "THIS IS THE PROJECT PATH"
+    - echo ${CI_PROJECT_PATH}
 
-test2:
-  stage: test
-  script:
-    - echo "Do another parallel test here"
-    - echo "For example run a lint test"
-
-deploy1:
-  stage: deploy
-  script:
-    - echo "Do your deploy here"
+create-dev-env:
+  stage: dev-env
+  image: registry.gitlab.com/gavinest/composer_dev_environments/gcp_test:latest
+  script: 
+    - docker run -ti -v $CI_PROJECT_PATH/mygcloud:/root/.config/gcloud -v $CI_PROJECT_PATH:/tmp/certs registry.gitlab.com/gavinest/composer_dev_environments/gcp_test:latest
